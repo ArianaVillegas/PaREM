@@ -25,7 +25,6 @@ class RegExParser {
       }
     }
     reg.push_back(ori[ori.length()-1]);
-    //cout<<reg<<endl;
   }
 
 
