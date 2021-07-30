@@ -204,7 +204,7 @@ bool verify_parallel_string(AF dfa, string str,int nthreads)
 {   int i;
     
     //int nthreads = omp_get_max_threads();
-    //nthreads = nthreads>str.length()?str.length():nthreads;
+    nthreads = nthreads>str.length()?str.length():nthreads;
     omp_set_num_threads(nthreads);
     vector<vector<vector<int>>> I(nthreads);
     auto transitions = dfa.get_transitions();
