@@ -202,19 +202,21 @@ bool verify_str(AF dfa, string str)
 
 bool verify_parallel_string(AF dfa, string str)
 {   int i;
-    vector<vector<vector<int>>> I(n_threads);
+    
+    int nthreads = omp_get_max_threads();
+    nthreads = nthreads>str.length()?str.length():nthreads;
+    omp_set_num_threads(nthreads);
+    vector<vector<vector<int>>> I(nthreads);
     auto transitions = dfa.get_transitions();
     auto final_states = dfa.get_final_states();
     
-    //int numthreads = 4;
-    //for (int i = 0; i < n_threads; i++)
-    omp_set_num_threads(4);
-    #pragma omp parallel private(i)//num_threads(numthreads) private(i)
+
+    #pragma omp parallel private(i) //num_threads(nthreads) //private(i)
     {
         i = omp_get_thread_num();
-        int start = i * round(str.size() * 1.0 / n_threads);
-        int end = (i != n_threads - 1) ? (i + 1) * round(str.size() * 1.0 / n_threads) : (str.size() * 1.0);
-        cout<<str[start]<<endl;
+        int start = i * round(str.size() * 1.0 / nthreads);
+        int end = (i != nthreads - 1) ? (i + 1) * round(str.size() * 1.0 / nthreads) : (str.size() * 1.0);
+        printf("%c,%d,%d \n",str[start],nthreads,i);
         vector<int> S, L, R;
         for (auto itr : transitions)
         {
@@ -242,8 +244,8 @@ bool verify_parallel_string(AF dfa, string str)
             I[i].push_back(Rr);
         }
     }
-
-    if (str.size() >= n_threads && I.front().empty())
+    
+    if (str.size() >= nthreads && I.front().empty())
     {
         return 0;
     }
@@ -262,7 +264,5 @@ bool verify_parallel_string(AF dfa, string str)
 
 
     return 1;
-    
-    
     
 }
