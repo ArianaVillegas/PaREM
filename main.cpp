@@ -19,7 +19,6 @@ int main()
     nfa.add_transition(2, 2, 'b');
     nfa.add_transition(2, 3, 'a');*/
 
-    AF nfa = re_to_nfa("b?c|a*cf");
     /*nfa.print();
     auto f_st = nfa.get_final_states();
     cout << "Final states: ";
@@ -38,9 +37,21 @@ int main()
         cout << x << ' ';
     }
     cout << '\n';*/
-
-    bool res = verify_str(dfa, "baaaacf");
-
+    string a = "b";
+    for(int i = 0;i<99999997;i++)
+        a.push_back('a');
+    a.push_back('c');
+    a.push_back('f');
+    
+    double start_seq = omp_get_wtime();
+    bool res1 = verify_str(dfa, a);
+    double start = omp_get_wtime();
+    bool res = verify_parallel_string(dfa, a);
+   
+    double end= omp_get_wtime();
+   
+    printf("Work took parallel %f seconds\n", end - start);
+    printf("Work took seq %f seconds\n", start-start_seq);
     cout << "Result of verification: " << res << '\n';
 
     return 0;
