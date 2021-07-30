@@ -4,13 +4,6 @@
 
 using namespace std;
 
-
-
-
-
-
-
-
 int main()
 {
     //Direct Call
