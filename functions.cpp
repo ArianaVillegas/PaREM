@@ -200,12 +200,11 @@ bool verify_str(AF dfa, string str)
     return 1;
 }
 
-
-bool verify_parallel_string(AF dfa, string str)
+bool verify_parallel_string(AF dfa, string str,int nthreads)
 {   int i;
     
-    int nthreads = omp_get_max_threads();
-    nthreads = nthreads>str.length()?str.length():nthreads;
+    //int nthreads = omp_get_max_threads();
+    //nthreads = nthreads>str.length()?str.length():nthreads;
     omp_set_num_threads(nthreads);
     vector<vector<vector<int>>> I(nthreads);
     auto transitions = dfa.get_transitions();
@@ -262,10 +261,12 @@ bool verify_parallel_string(AF dfa, string str)
     }
     if (!f_state)
         return 0;
- 
+
+
+
+
     int cur = I.front().front().back();
- 
-    #pragma omp parallel private(i)
+    for (int i = 1; i < nthreads; i++)
     {
         int start = i * floor(str.size() * 1.0 / nthreads);
         int end = (i != nthreads - 1) ? (i + 1) * floor(str.size() * 1.0 / nthreads) : (str.size() * 1.0);
@@ -289,5 +290,8 @@ bool verify_parallel_string(AF dfa, string str)
     }
 
     return 1;
-       
+    
+    
+    
 }
+
