@@ -199,3 +199,70 @@ bool verify_str(AF dfa, string str)
 
     return 1;
 }
+
+bool verify_parallel_string(AF dfa, string str)
+{   int i;
+    vector<vector<vector<int>>> I(n_threads);
+    auto transitions = dfa.get_transitions();
+    auto final_states = dfa.get_final_states();
+    
+    //int numthreads = 4;
+    //for (int i = 0; i < n_threads; i++)
+    omp_set_num_threads(4);
+    #pragma omp parallel private(i)//num_threads(numthreads) private(i)
+    {
+        i = omp_get_thread_num();
+        int start = i * round(str.size() * 1.0 / n_threads);
+        int end = (i != n_threads - 1) ? (i + 1) * round(str.size() * 1.0 / n_threads) : (str.size() * 1.0);
+        cout<<str[start]<<endl;
+        vector<int> S, L, R;
+        for (auto itr : transitions)
+        {
+            if (itr.second[str[start]].empty() == false)
+                S.push_back(itr.first);
+            if (i && itr.second[str[start - 1]].empty() == false)
+                L.push_back(itr.second[str[start - 1]][0]);
+            else
+                L.push_back(0);
+        }
+
+        sort(S.begin(), S.end());
+        sort(L.begin(), L.end());
+        set_intersection(S.begin(), S.end(), L.begin(), L.end(), back_inserter(R));
+
+        for (int vertix_idx : R)
+        {
+            vector<int> Rr;
+            for (int k = start; k < end; k++)
+            {
+                Rr.push_back(vertix_idx);
+                vertix_idx = transitions[vertix_idx][str[k]][0];
+            }
+            Rr.push_back(vertix_idx);
+            I[i].push_back(Rr);
+        }
+    }
+
+    if (str.size() >= n_threads && I.front().empty())
+    {
+        return 0;
+    }
+
+    bool f_state = 0;
+    for (auto Rr : I.back())
+    {
+        if (find(final_states.begin(), final_states.end(), Rr.back()) != final_states.end())
+        {
+            f_state = 1;
+            break;
+        }
+    }
+    if (!f_state)
+        return 0;
+
+
+    return 1;
+    
+    
+    
+}
