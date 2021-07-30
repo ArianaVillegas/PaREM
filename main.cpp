@@ -1,4 +1,5 @@
 #include <iostream>
+#include <omp.h>
 #include "functions.cpp"
 
 using namespace std;
