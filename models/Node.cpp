@@ -1,3 +1,7 @@
+#ifndef NODE_H
+#define NODE_H
+
+
 #include <string>
 #include <stack>
 #include <iostream>
@@ -53,3 +57,5 @@ public:
     postorder(root->right, nodes);
   }
 };
+
+#endif
