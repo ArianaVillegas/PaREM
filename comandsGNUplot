@@ -1,13 +1,5 @@
 stats 'dataFile.dat' nooutput
+set ylabel "Speed Up"
+set xlabel "Numero procesos"
+set key right bottom
 plot for [IDX=0:int(STATS_blocks)] 'dataFile.dat' i IDX u 1:2 smooth csplines with linespoints title columnheader(1)
-
-stats 'dataFile.dat' nooutput
-plot for [IDX=0:int(STATS_blocks)]
-  'dataFile.dat' i IDX u 1:2 notitle with points, \
-  '' i IDX u 1:2 notitle smooth csplines with lines, \
-  1 / 0 title columnheader(1) with linespoints
-
-
-plot "file" using 1:3 notitle with points linestyle 1, \
-     "" using 1:3 notitle smooth csplines with lines linestyle 1, \
-     1 / 0 title "title" with linespoints linestyle 1
