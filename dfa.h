@@ -1,51 +1,24 @@
-#ifndef AF_H
-#define AF_H
+#ifndef DFA_H
+#define DFA_H
 
-#include <unordered_map>
 #include <iostream>
 #include <vector>
-#include <set>
 #include "defs.h"
 
 using namespace std;
 
-class AF
+class DFA
 {
 private:
     typedef unordered_map<int, unordered_map<char, vector<int>>> T;
-    typedef vector<vector<int>> V;
     T transitions;
-    V vertexs;
+    vector<vector<int>> vertexs;
     vector<int> final_states;
     vector<bool> vis;
 
-    void eclosure(int from, set<int> &result, vector<bool> &vis)
-    {
-        result.insert(from);
-
-        for (int to : transitions[from]['^'])
-        {
-            if (!vis[to])
-            {
-                vis[to] = 1;
-                eclosure(to, result, vis);
-            }
-        }
-    }
-
 public:
-    AF() {}
+    DFA() {}
 
-    // Setea un conjunto de vertices secuenciales
-    void set_vertex(int n_vertex)
-    {
-        for (int i = 0; i < n_vertex; i++)
-        {
-            vertexs.push_back({i});
-        }
-    }
-
-    // Añade un vétice compuesto por otros vértices
     int add_vertex(vector<int> &vertex)
     {
         vertexs.push_back(vertex);
@@ -73,37 +46,11 @@ public:
         return -1;
     }
 
-    int get_next_vertex_idx()
-    {
-        for (int i = 0; i < vis.size(); i++)
-        {
-            if (!vis[i])
-                return i;
-        }
-        return -1;
-    }
-
-    V get_vertexs()
-    {
-        return vertexs;
-    }
-
-    int get_size_vertexs()
-    {
-        return vertexs.size();
-    }
-
     void add_transition(int from, int to, char symbol)
     {
         transitions[from][symbol].push_back(to);
     }
 
-    T get_transitions()
-    {
-        return transitions;
-    }
-
-    // Recibe vector con estados finales y los setea
     void set_final_state(vector<int> curr_final_states)
     {
         for (int i = 0; i < vertexs.size(); i++)
@@ -127,54 +74,19 @@ public:
         return final_states;
     }
 
-    vector<char> get_reachable_symbols(const vector<int> &f_vertex)
+    int get_next_vertex_idx()
     {
-        set<char> result;
-
-        for (int from : f_vertex)
+        for (int i = 0; i < vis.size(); i++)
         {
-            for (auto trans : transitions[from])
-            {
-                if (trans.first != '^')
-                {
-                    result.insert(trans.first);
-                }
-            }
+            if (!vis[i])
+                return i;
         }
-
-        vector<char> V(result.begin(), result.end());
-
-        return V;
+        return -1;
     }
 
-    vector<int> get_transition_vertex(const vector<int> &V, char symbol)
+    T get_transitions()
     {
-        vector<int> result;
-
-        for (int from : V)
-        {
-            for (int to : transitions[from][symbol])
-            {
-                result.push_back(to);
-            }
-        }
-
-        return result;
-    }
-
-    vector<int> eclosure(const vector<int> &V)
-    {
-        set<int> result;
-        vector<bool> vis(vertexs.size(), 0);
-
-        for (int from : V)
-        {
-            eclosure(from, result, vis);
-        }
-
-        vector<int> v(result.begin(), result.end());
-
-        return v;
+        return transitions;
     }
 
     void print()
@@ -201,7 +113,7 @@ public:
         }
     }
 
-    ~AF() {}
+    ~DFA() {}
 };
 
 #endif
