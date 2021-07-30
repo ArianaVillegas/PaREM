@@ -63,13 +63,100 @@ public:
     root->print2DUtil(root, 0);
   }
 
+  int op_map(char c)
+  {
+    if (c == '(')
+      return 4;
+    else if (c == '|')
+      return 3;
+    else if (c == ' ')
+      return 2;
+    else if (c == '*' || c == '+' || c == '?')
+      return 1;
+    else
+      return 0;
+  }
+
   stack<string> postorder()
   {
     stack<string> nodes;
-    root = new Node();
+    stack<char> aux;
+    for (char c : reg)
+    {
+      if (!aux.empty() && op_map(c) > op_map(aux.top()) && c != '(')
+      {
+        while (!aux.empty() && op_map(c) > op_map(aux.top()))
+        {
+          char a = aux.top();
+          aux.pop();
+          if (a == ')')
+          {
+            while (aux.top() != '(')
+            {
+              a = aux.top();
+              aux.pop();
+              if (a != ' ')
+                nodes.push({a});
+              else
+                nodes.push("conc");
+            }
+            aux.pop();
+          }
+          else
+          {
+            if (a != ' ')
+              nodes.push({a});
+            else
+              nodes.push("conc");
+          }
+        }
+      }
+      if (c >= 'a' && c <= 'z')
+        nodes.push({c});
+      else
+        aux.push(c);
+    }
+
+    while (!aux.empty())
+    {
+      char a = aux.top();
+      aux.pop();
+      if (a == ')')
+      {
+        while (aux.top() != '(')
+        {
+          a = aux.top();
+          aux.pop();
+          if (a != ' ')
+            nodes.push({a});
+          else
+            nodes.push("conc");
+        }
+        aux.pop();
+      }
+      else
+      {
+        if (a != ' ')
+          nodes.push({a});
+        else
+          nodes.push("conc");
+      }
+    }
+
+    stack<string> result;
+    while (!nodes.empty())
+    {
+      auto cur = nodes.top();
+      nodes.pop();
+      result.push(cur);
+    }
+
+    return result;
+
+    /*root = new Node();
     root = regex();
     root->postorder(root, nodes);
-    return nodes;
+    return nodes;*/
   }
 
   Node *regex()

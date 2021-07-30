@@ -23,9 +23,9 @@ AF re_to_nfa(string re)
 
         if (ast_node == "conc")
         {
-            auto left_nfa = nfa_nodes.top();
-            nfa_nodes.pop();
             auto right_nfa = nfa_nodes.top();
+            nfa_nodes.pop();
+            auto left_nfa = nfa_nodes.top();
             nfa_nodes.pop();
 
             vector<AF> ops;
@@ -44,9 +44,9 @@ AF re_to_nfa(string re)
         }
         else if (ast_node == "|")
         {
-            auto left_nfa = nfa_nodes.top();
-            nfa_nodes.pop();
             auto right_nfa = nfa_nodes.top();
+            nfa_nodes.pop();
+            auto left_nfa = nfa_nodes.top();
             nfa_nodes.pop();
 
             vector<AF> ops;
@@ -126,8 +126,8 @@ bool verify_str(AF dfa, string str)
 
     for (int i = 0; i < n_threads; i++)
     {
-        int start = i * round(str.size() * 1.0 / n_threads);
-        int end = (i != n_threads - 1) ? (i + 1) * round(str.size() * 1.0 / n_threads) : (str.size() * 1.0);
+        int start = i * floor(str.size() * 1.0 / n_threads);
+        int end = (i != n_threads - 1) ? (i + 1) * floor(str.size() * 1.0 / n_threads) : (str.size() * 1.0);
         vector<int> S, L, R;
         for (auto itr : transitions)
         {
@@ -173,11 +173,11 @@ bool verify_str(AF dfa, string str)
     if (!f_state)
         return 0;
 
-    /*int cur = I.front().front().back();
+    int cur = I.front().front().back();
     for (int i = 1; i < n_threads; i++)
     {
-        int start = i * round(str.size() * 1.0 / n_threads);
-        int end = (i != n_threads - 1) ? (i + 1) * round(str.size() * 1.0 / n_threads) : (str.size() * 1.0);
+        int start = i * floor(str.size() * 1.0 / n_threads);
+        int end = (i != n_threads - 1) ? (i + 1) * floor(str.size() * 1.0 / n_threads) : (str.size() * 1.0);
 
         bool f_step = 0;
 
@@ -186,16 +186,16 @@ bool verify_str(AF dfa, string str)
 
         for (auto Rr : I[i])
         {
-            if (cur == Rr.front() && Rr.size() == start - end + 1)
+            if (cur == Rr.front() && Rr.size() == end - start + 1)
             {
                 f_step = 1;
                 cur = Rr.back();
                 break;
             }
         }
-        if (!f_state)
+        if (!f_step)
             return 0;
-    }*/
+    }
 
     return 1;
 }
